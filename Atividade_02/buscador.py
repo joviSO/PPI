@@ -6,14 +6,14 @@ import re
 def main():
   create_cache()
 
-  termo_busca = "ruby"
-  url = "https://www.ruby-lang.org/pt/documentation/"
-  depth = 2
+  termo_busca = input("insira o termo a ser utilizado: ")
+  url = input("insira a url do site: ")
+  depth = input("insira a profundidade da busca no site: ")
 
-  print(busca(termo_busca, url, depth))
+  print(busca(str.upper(termo_busca), url, depth))
 
 def create_cache():
-  requests_cache.install_cache('Buscador')
+  requests_cache.install_cache("teste")
   
 def request_url(url):
   return requests.get(url)
@@ -23,7 +23,9 @@ def busca(termo, url_inicial, profundidade):
   urls = [url_inicial]
 
   visitados = []
+
   ocorrencias = {}
+
   for i in range(profundidade):
     novas_urls = []
     for url in urls:
@@ -36,8 +38,8 @@ def busca(termo, url_inicial, profundidade):
           continue
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        padrao = re.compile(r'(\b\w+\b.{0,20})?(' + re.escape(termo) + r')(.{0,20}\b\w+\b)?')
-        ocorrencias[url] = re.findall(padrao, soup.get_text())
+        # padrao = re.compile(r'(\b\w+\b.{0,20})?(' + re.escape(termo) + r')(.{0,20}\b\w+\b)?')
+        ocorrencias[url] = len(re.findall(termo, str.upper(soup.get_text())))
         links = soup.find_all('a')
 
         for link in links:
@@ -46,11 +48,8 @@ def busca(termo, url_inicial, profundidade):
           novas_urls.append(nova_url)
 
     urls = novas_urls
-    
 
   return ocorrencias
-  
-  
   
 if __name__ == "__main__":
   main()
